@@ -3,262 +3,484 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RPP Private | Black Edition</title>
+    <title>RPP | Controle Financeiro</title>
     
-    <!-- Configurações de PWA -->
+    <!-- CONFIGURAÇÃO APP INSTALÁVEL (PWA) -->
     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://i.imgur.com/1QjRMOz.png">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="apple-touch-icon" href="icon.png">
 
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Orbitron:wght@900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #000000; 
-            --accent: #D4AF37; 
-            --success: #10b981;
-            --danger: #ff4d4d;
-            --bg-app: #0A0A0A;
-            --bg-card: #141414;
-            --bg-input: #1C1C1E;
-            --bg-nav: #000000;
-            --text-dark: #FFFFFF;
-            --text-muted: #8E8E93;
-            --border: #2C2C2E;
-            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
-            --radius-md: 12px;
+            --primary: #D4AF37; 
+            --gold-gradient: linear-gradient(to bottom, #BF953F 0%, #FCF6BA 20%, #B38728 40%, #FBF5B7 60%, #AA771C 80%, #D4AF37 100%);
+            --primary-soft: rgba(212, 175, 55, 0.15);
+            --success: #10b981; --danger: #ff453a;
+            --bg-app: #000000; --bg-card: #121212;
+            --text-dark: #ffffff; --text-muted: #8e8e93;
+            --border: #2c2c2e; --shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --radius-lg: 24px; --radius-md: 12px;
+            --nav-bg: #1c1c1e;
         }
 
-        /* --- ESTILO DA SPLASH SCREEN ANIMADA --- */
-        #splash-screen {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.8s ease-out;
-        }
-
-        .logo-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            z-index: 1;
-        }
-
-        /* Máscara preta que sobe para revelar o gráfico */
-        .reveal-overlay {
-            position: absolute;
-            top: 25%; /* Ajustado para a posição do gráfico na sua imagem */
-            left: 30%;
-            width: 40%;
-            height: 35%;
-            background: #000; 
-            z-index: 2;
-            animation: revealUp 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        @keyframes revealUp {
-            from { transform: translateY(0); }
-            to { transform: translateY(-100%); }
-        }
-
-        .loading-bar {
-            width: 180px;
-            height: 2px;
-            background: #1a1a1a;
-            margin-top: -20px;
-            border-radius: 10px;
-            overflow: hidden;
-            z-index: 3;
-        }
-
-        .loading-progress {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #AA8928, #D4AF37);
-            animation: loadProgress 2.8s ease-in-out forwards;
-        }
-
-        @keyframes loadProgress {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
-
-        /* --- ESTILOS DO APP --- */
-        [data-theme="light"] {
-            --bg-app: #F2F2F7; --bg-card: #FFFFFF; --bg-input: #E5E5EA; --bg-nav: #FFFFFF;
-            --text-dark: #1C1C1E; --text-muted: #636366; --border: #D1D1D6;
-            --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.08); --primary: #1C1C1E;
+        body.light-mode {
+            --bg-app: #f4f4f7; --bg-card: #ffffff; --text-dark: #1c1c1e;
+            --text-muted: #636366; --border: #e5e5ea; --nav-bg: #ffffff;
+            --shadow: 0 10px 25px rgba(0,0,0,0.05);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: var(--bg-app); color: var(--text-dark); padding-bottom: 110px; transition: all 0.4s ease; min-height: 100vh; overflow-x: hidden; }
-
-        #app-lock { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
-        .hidden-value { position: relative; color: transparent !important; transition: all 0.4s ease; user-select: none; filter: blur(15px); opacity: 0.2; }
-        body.is-visible .hidden-value { color: inherit !important; filter: blur(0); opacity: 1; }
-
-        .app-header { background: var(--primary); padding: 40px 20px 30px 20px; position: sticky; top: 0; z-index: 1000; color: white; border-bottom: 1px solid var(--border); }
-        .app-header h1 { font-size: 0.9rem; font-weight: 800; color: #FFF; letter-spacing: 2px; text-transform: uppercase; }
-        .app-header span { color: var(--accent); font-weight: 600; }
+        body { background-color: var(--bg-app); color: var(--text-dark); padding-bottom: 120px; transition: 0.3s; }
         
-        .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; margin-top: -25px; }
-        .stat-card { background: var(--bg-card); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-card); }
-        .stat-card span { font-size: 0.6rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-        .stat-card div { font-size: 1.1rem; font-weight: 700; margin-top: 6px; }
-
-        .container { padding: 0 20px; }
-        .section-title { font-size: 0.7rem; font-weight: 800; color: var(--accent); text-transform: uppercase; margin: 30px 0 15px 0; display: flex; align-items: center; gap: 10px; letter-spacing: 1.5px; }
-
-        .btn { padding: 16px; border-radius: var(--radius-md); border: none; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
-        .btn-primary { background: linear-gradient(135deg, #D4AF37 0%, #AA8928 100%); color: #000; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-category { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-dark); margin-bottom: 12px; justify-content: flex-start; padding-left: 20px; }
-        .icon-box { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--bg-input); color: var(--accent); margin-right: 15px; }
+        /* PRIVACIDADE */
+        .hidden-value { position: relative; color: transparent !important; transition: all 0.5s; filter: blur(12px); opacity: 0.6; }
+        .is-visible .hidden-value { color: inherit !important; filter: blur(0); opacity: 1; }
         
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 90px; background: var(--bg-nav); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 2000; padding-bottom: 20px; }
-        .nav-item { color: #8E8E93; font-size: 0.6rem; font-weight: 700; flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; text-transform: uppercase; letter-spacing: 0.5px; }
-        .nav-item.active { color: var(--accent); }
+        /* HEADER */
+        .app-header { background: rgba(var(--bg-app), 0.85); backdrop-filter: blur(20px); padding: 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+        .logo-container { display: flex; flex-direction: column; }
+        .logo-rpp { 
+            font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 900; line-height: 1;
+            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); letter-spacing: -1px;
+        }
+        .logo-subtitle { color: var(--text-dark); font-size: 0.65rem; font-weight: 600; text-transform: lowercase; letter-spacing: 1.5px; margin-top: -2px; opacity: 0.6; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 3000; display:none; align-items: flex-end; }
-        .modal-sheet { background: var(--bg-card); width: 100%; border-radius: 24px 24px 0 0; padding: 20px 25px 40px 25px; max-height: 92vh; overflow-y: auto; border-top: 2px solid var(--accent); }
+        .btn-privacy-toggle {
+            background: transparent; border: 1px solid var(--border); color: var(--primary);
+            width: 40px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .btn-privacy-toggle svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; }
+        body.is-visible .icon-eye-off, body:not(.is-visible) .icon-eye-on { display: none; }
+
+        /* ALERTAS / ALARMES */
+        .alert-area { padding: 0 20px; margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .alert-box { padding: 12px 15px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; display: none; align-items: center; gap: 10px; border: 1px solid transparent; }
+        .alert-warning { background: rgba(212, 175, 55, 0.15); border-color: var(--primary); color: var(--primary); }
+        .alert-danger { background: rgba(255, 69, 58, 0.15); border-color: var(--danger); color: var(--danger); }
+
+        /* DASHBOARD */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; }
+        .stat-card { background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+        .stat-card::after { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary); }
+        .stat-card span { font-size: 0.6rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .stat-card div { font-size: 1.1rem; font-weight: 800; margin-top: 8px; }
         
-        input, select { width: 100%; padding: 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-input); color: var(--text-dark); font-size: 1rem; margin-bottom: 15px; outline: none; }
-        .main-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 22px; border: 1px solid var(--border); margin-bottom: 15px; position: relative; overflow: hidden; }
-        .main-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); }
-        #toast { position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%); padding: 14px 28px; border-radius: 12px; color: #000; font-weight: 800; font-size: 0.75rem; z-index: 5000; display: none; text-transform: uppercase; text-align: center; }
+        /* VERIFICADO */
+        .gold-check { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .gold-check svg { width: 24px; height: 24px; stroke: var(--border); stroke-width: 4; fill: none; transition: 0.3s; }
+        .gold-check.active svg { stroke: var(--primary); filter: drop-shadow(0 0 5px var(--primary)); }
+
+        /* LISTAS E CATEGORIAS */
+        .category-wrapper { margin-bottom: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border); background: var(--bg-card); overflow: hidden; }
+        .category-wrapper.active { border-color: var(--primary); }
+        .category-cover { padding: 25px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .category-info h2 { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+        .category-content { background: var(--bg-app); padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
+        .category-wrapper.active .category-content { max-height: 2000px; padding: 20px; border-top: 1px solid var(--border); }
+        
+        .main-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 20px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: var(--shadow); }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); }
+        .history-item .val { font-weight: 800; color: var(--primary); }
+
+        .total-row { display: flex; justify-content: space-between; padding: 10px 0; font-weight: 800; font-size: 0.75rem; }
+        .total-divider { border-top: 2px solid var(--border); margin-top: 15px; padding-top: 10px; }
+
+        /* NAV */
+        .bottom-nav { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: 70px; background: var(--nav-bg); border: 1px solid var(--border); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+        .nav-item { color: var(--text-muted); font-size: 0.65rem; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 4px; text-transform: uppercase; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
+        
+        /* MODAIS */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 2000; display:none; align-items: flex-end; }
+        .modal-sheet { background: var(--bg-card); width: 100%; border-radius: 30px 30px 0 0; padding: 35px 25px; max-height: 85vh; border-top: 2px solid var(--primary); overflow-y: auto; }
+        input, select { width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-app); color: var(--text-dark); font-weight: 600; margin-bottom: 15px; }
+        
+        .content-section { display: none; padding-top: 10px; }
+        .content-section.active { display: block; }
+        .sub-label { font-size: 0.6rem; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 15px; display: block; }
+        .btn { padding: 14px 20px; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; text-transform: uppercase; font-size: 0.7rem; width: 100%; border: none; }
+        .btn-primary { background: var(--gold-gradient); color: #000; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-dark); margin-bottom: 15px; }
+        .btn-undo-small { background: var(--border); color: var(--primary); padding: 6px 14px; border-radius: 8px; font-size: 0.6rem; cursor: pointer; font-weight: 800; border: 1px solid var(--primary-soft); }
     </style>
 </head>
-<body>
-
-<!-- SPLASH SCREEN ANIMADA -->
-<div id="splash-screen">
-    <div class="logo-container">
-        <!-- SUA IMAGEM DO IMGUR -->
-        <img src="https://i.imgur.com/1QjRMOz.png" alt="RPP Logo" class="logo-img">
-        <!-- Camada que faz o gráfico subir -->
-        <div class="reveal-overlay"></div>
-    </div>
-    <div class="loading-bar">
-        <div class="loading-progress"></div>
-    </div>
-    <p style="color: var(--accent); font-size: 0.6rem; letter-spacing: 4px; margin-top: 20px; font-weight: 700; opacity: 0.8;">PRIVATE BANKING SYSTEM</p>
-</div>
-
-<!-- TELA DE BLOQUEIO -->
-<div id="app-lock" style="display: none;">
-    <i data-lucide="shield-check" style="width: 40px; height: 40px; color: var(--accent); margin-bottom: 20px;"></i>
-    <p style="font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 20px;">AUTENTICAÇÃO NECESSÁRIA</p>
-    <button class="btn btn-primary" style="width: auto; padding: 12px 30px;" onclick="unlockApp()">ACESSAR SISTEMA</button>
-</div>
-
-<div id="toast"></div>
+<body class="is-visible">
 
 <header class="app-header">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div><h1>RPP <span>PRIVATE</span></h1><span style="font-size: 0.55rem; color: #8E8E93; text-transform: uppercase; letter-spacing: 1.5px;">Black Edition Patrimonial</span></div>
-        <button onclick="togglePrivacy()" class="btn" style="width:42px; height:42px; padding:0; background: rgba(255,255,255,0.05); border-radius: 50%;"><i data-lucide="eye-off" style="width:18px; color: #fff;"></i></button>
-    </div>
-    <div style="display: flex; gap: 10px; margin-top: 25px;">
-        <select id="month-selector" onchange="render()"></select>
-        <select id="year-selector" onchange="render()"></select>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div class="logo-container">
+            <div class="logo-rpp">RPP</div>
+            <div class="logo-subtitle">controle financeiro</div>
+        </div>
+        <div style="display:flex; gap:6px; align-items: center;">
+            <div class="btn-privacy-toggle" onclick="document.body.classList.toggle('is-visible')">
+                <svg class="icon-eye-on" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <svg class="icon-eye-off" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 10.07 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            </div>
+            <select id="month-selector" onchange="render()" style="width: 80px; padding: 8px; font-size: 0.7rem; margin:0; height:35px"></select>
+            <select id="year-selector" onchange="render()" style="width: 75px; padding: 8px; font-size: 0.7rem; margin:0; height:35px"></select>
+        </div>
     </div>
 </header>
 
-<section id="inicio" class="content-section active">
-    <div class="dashboard-grid">
-        <div class="stat-card"><span>Liquidez (In)</span><div id="stat-inc" class="hidden-value">R$ 0</div></div>
-        <div class="stat-card"><span>Fluxo (Out)</span><div id="stat-exp" class="hidden-value">R$ 0</div></div>
-        <div class="stat-card"><span>Pendências</span><div id="stat-pen" class="hidden-value" style="color:var(--danger)">R$ 0</div></div>
-        <div class="stat-card"><span>Consolidado</span><div id="stat-bal" class="hidden-value" style="color:var(--accent)">R$ 0</div></div>
-    </div>
-    <div class="container">
-        <div class="section-title"><i data-lucide="shield" style="width: 14px; color: var(--accent);"></i> Titulares do Mês</div>
+<div id="alert-container" class="alert-area">
+    <div id="alarm-hoje" class="alert-box alert-warning">🔔 Vence Hoje: <span id="txt-hoje"></span></div>
+    <div id="alarm-atraso" class="alert-box alert-danger">⚠️ Atrasadas: <span id="txt-atraso"></span></div>
+</div>
+
+<div id="top-stats" class="dashboard-grid">
+    <div class="stat-card"><span>Ganhos</span><div id="stat-inc" class="hidden-value">R$ 0,00</div></div>
+    <div class="stat-card"><span>Saídas Efetivas</span><div id="stat-exp" class="hidden-value">R$ 0,00</div></div>
+    <div class="stat-card"><span>Atrasos Casa</span><div id="stat-pen" class="hidden-value" style="color:var(--danger)">R$ 0,00</div></div>
+    <div class="stat-card"><span>Saldo Atual</span><div id="stat-bal" class="hidden-value" style="color:var(--primary)">R$ 0,00</div></div>
+</div>
+
+<div class="container">
+    <section id="resumo" class="content-section active">
+        <span class="sub-label">Visão Geral</span>
         <div id="resumo-casa-container"></div>
-        <div id="tabelas-por-pessoa" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
+        <div id="tabelas-por-pessoa" style="display:grid; grid-template-columns:1fr 1fr; gap:12px"></div>
+    </section>
+    
+    <section id="lancar" class="content-section">
+        <div class="category-wrapper" id="wrap-income">
+            <div class="category-cover" onclick="toggleCategory('wrap-income')"><div class="category-info"><p>Entradas</p><h2>RECEITAS</h2></div><div class="category-status">ABRIR</div></div>
+            <div class="category-content"><button class="btn btn-primary" onclick="openModalLancar('modal-ganho')">＋ Novo Lançamento</button><div id="list-income"></div></div>
+        </div>
+        <div class="category-wrapper" id="wrap-fixed">
+            <div class="category-cover" onclick="toggleCategory('wrap-fixed')"><div class="category-info"><p>Mensais</p><h2>FIXAS</h2></div><div class="category-status">ABRIR</div></div>
+            <div class="category-content"><button class="btn btn-outline" onclick="openModalLancar('modal-fixo')">＋ Nova Conta Fixa</button><div id="list-fixed"></div></div>
+        </div>
+        <div class="category-wrapper" id="wrap-parcel">
+            <div class="category-cover" onclick="toggleCategory('wrap-parcel')"><div class="category-info"><p>Crédito</p><h2>PARCELAS</h2></div><div class="category-status">ABRIR</div></div>
+            <div class="category-content"><button class="btn btn-outline" onclick="openModalLancar('modal-parcela')">＋ Novo Parcelado</button><div id="list-parcel"></div></div>
+        </div>
+        <div class="category-wrapper" id="wrap-variable">
+            <div class="category-cover" onclick="toggleCategory('wrap-variable')"><div class="category-info"><p>Casa</p><h2>VARIÁVEIS</h2></div><div class="category-status">ABRIR</div></div>
+            <div class="category-content"><button class="btn btn-outline" onclick="openModalLancar('modal-variavel')">＋ Lançar Gasto Casa</button><div id="list-variable"></div></div>
+        </div>
+    </section>
+
+    <section id="configuracao" class="content-section">
+        <span class="sub-label">Visual</span>
+        <button class="btn btn-outline" onclick="toggleTheme()" id="btn-theme-text">MODO DIURNO: DESATIVADO</button>
+        <button class="btn btn-outline" onclick="pedirPermissaoNotificacao()">Ativar Alertas Push 🔔</button>
+        
+        <span class="sub-label" style="margin-top:20px">Segurança e Dados</span>
+        <button class="btn btn-outline" onclick="exportarDados()">Backup de Dados 💾</button>
+        <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">Restaurar Backup 📂</button>
+        <input type="file" id="fileInput" style="display:none" onchange="importarDados(event)">
+    </section>
+</div>
+
+<!-- MODAIS -->
+<div id="modal-ganho" class="modal-overlay" onclick="if(event.target==this) closeModals()"><div class="modal-sheet"><div class="modal-header"><span class="sub-label">Nova Receita</span><button class="btn-undo-small" onclick="undo('recebidos')">DESFAZER</button></div><input type="text" id="r-desc" placeholder="Descrição"><input type="number" id="r-val" placeholder="0.00"><button class="btn btn-primary" onclick="addRecebido()">ADICIONAR</button></div></div>
+<div id="modal-fixo" class="modal-overlay" onclick="if(event.target==this) closeModals()"><div class="modal-sheet"><div class="modal-header"><span class="sub-label">Conta Fixa</span><button class="btn-undo-small" onclick="undo('fixed_accounts')">DESFAZER</button></div><input type="number" id="f-dia" placeholder="Dia"><input type="text" id="f-desc" placeholder="Descrição"><input type="text" id="f-resp" placeholder="Responsável"><button class="btn btn-primary" onclick="addFixedAccount()">CRIAR</button></div></div>
+<div id="modal-parcela" class="modal-overlay" onclick="if(event.target==this) closeModals()"><div class="modal-sheet"><div class="modal-header"><span class="sub-label">Parcelamento</span><button class="btn-undo-small" onclick="undo('parcelamentos')">DESFAZER</button></div><input type="text" id="p-desc" placeholder="Item"><input type="number" id="p-val" placeholder="Valor Mensal Total"><input type="number" id="p-qtd" placeholder="Vezes"><div style="display:flex; gap:10px"><select id="p-start-m"></select><select id="p-start-y"></select></div><input type="text" id="p-resp" placeholder="Responsáveis (Suzana, Renan...)"><button class="btn btn-primary" onclick="addParcelamento()">CONFIRMAR</button></div></div>
+<div id="modal-variavel" class="modal-overlay" onclick="if(event.target==this) closeModals()"><div class="modal-sheet"><div class="modal-header"><span class="sub-label">Variável (CASA)</span><button class="btn-undo-small" onclick="undo('variaveis')">DESFAZER</button></div><input type="text" id="v-desc" placeholder="Descrição do Gasto"><input type="number" id="v-val" placeholder="0.00"><button class="btn btn-primary" onclick="addVariavel()">LANÇAR GASTO</button></div></div>
+
+<div id="modal-edit" class="modal-overlay" onclick="if(event.target==this) closeModals()">
+    <div class="modal-sheet">
+        <div class="modal-header"><span class="sub-label">Editar</span><div style="display:flex;gap:8px"><button id="btn-undo-edit" class="btn-undo-small">DESFAZER</button><button class="btn-undo-small" onclick="closeModals()">FECHAR</button></div></div>
+        <div id="status-container-fixed"><button id="modal-pay-btn" class="btn" style="height:60px; margin-bottom:20px; border: 1px solid var(--primary); background:transparent; color:var(--primary)">LIQUIDAR</button></div>
+        <input type="hidden" id="edit-id"><input type="hidden" id="edit-type">
+        <input type="text" id="edit-desc" placeholder="Descrição">
+        <input type="number" id="edit-val" placeholder="0.00">
+        <div id="resp-field-group"><input type="text" id="edit-resp" placeholder="Responsável"></div>
+        <button class="btn btn-primary" onclick="saveGlobalEdit()">SALVAR ALTERAÇÕES</button>
+        <button class="btn" style="background:transparent; color:var(--danger); margin-top:15px; font-size:0.6rem" onclick="deleteGlobal()">EXCLUIR PERMANENTEMENTE</button>
     </div>
-</section>
+</div>
 
-<section id="adicionar" class="content-section">
-    <div class="container" style="padding-top: 20px;">
-        <div class="section-title"><i data-lucide="plus-square" style="width: 14px;"></i> Gestão de Lançamentos</div>
-        <button class="btn btn-category" onclick="openModal('modal-fixo')"><div class="icon-box"><i data-lucide="refresh-cw"></i></div> Despesa Recorrente</button>
-        <button class="btn btn-category" onclick="openModal('modal-parcela')"><div class="icon-box"><i data-lucide="layers"></i></div> Estruturar Parcelas</button>
-        <button class="btn btn-category" onclick="openModal('modal-variavel')"><div class="icon-box"><i data-lucide="zap"></i></div> Débito Eventual</button>
-        <button class="btn btn-category" onclick="openModal('modal-ganho')"><div class="icon-box"><i data-lucide="trending-up"></i></div> Aporte / Receita</button>
+<div id="modal-detalhes" class="modal-overlay" onclick="if(event.target==this) closeModals()">
+    <div class="modal-sheet">
+        <h2 id="detalhes-titulo" style="font-weight:800; color:var(--primary); margin-bottom:20px; text-transform:uppercase"></h2>
+        <div id="detalhes-lista"></div>
+        <div style="margin-top:25px; padding:20px; background:var(--primary-soft); border-radius:15px; display:flex; justify-content:space-between; border:1px solid var(--primary)">
+            <span style="font-weight:800">TOTAL</span>
+            <span id="detalhes-total" class="hidden-value" style="font-weight:800; color:var(--primary)"></span>
+        </div>
+        <button class="btn btn-primary" style="margin-top:20px; background:#D4AF37; color:#000" id="btn-share-whatsapp">COMPARTILHAR EXTRATO</button>
     </div>
-</section>
-
-<!-- (Modais de lançamento permanecem iguais aos anteriores) -->
-<div id="modal-fixo" class="modal-overlay" onclick="closeModals(event)"><div class="modal-sheet">
-    <div class="modal-header" style="display:flex; justify-content:space-between; margin-bottom:20px"><h2>Recorrentes</h2><button onclick="closeModals('force')" style="background:none; border:none; color:#fff"><i data-lucide="x"></i></button></div>
-    <input type="number" id="f-dia" placeholder="Dia Vencimento"><input type="text" id="f-desc" placeholder="Ex: Aluguel"><input type="text" id="f-resp" placeholder="Responsável" value="Casa"><button class="btn btn-primary" onclick="addFixedAccount()">CONFIRMAR</button>
-    <table class="history-table" id="fixed-body" style="width:100%; margin-top:20px; color:#fff"></table>
-</div></div>
-
-<!-- (Omitido o restante dos modais por brevidade, mas devem ser mantidos conforme o código original) -->
+</div>
 
 <nav class="bottom-nav">
-    <div class="nav-item active" onclick="openTab('inicio')"><i data-lucide="pie-chart"></i><span>Resumo</span></div>
-    <div class="nav-item" onclick="openTab('adicionar')"><i data-lucide="plus-circle"></i><span>Lançar</span></div>
-    <div class="nav-item" onclick="openTab('configuracao')"><i data-lucide="settings"></i><span>Privê</span></div>
+    <div class="nav-item active" onclick="openTab('resumo')">RESUMO</div>
+    <div class="nav-item" onclick="openTab('lancar')">LANÇAR</div>
+    <div class="nav-item" onclick="openTab('configuracao')">CONFIG</div>
 </nav>
 
 <script>
-    // Registro do Service Worker (PWA)
-    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); }
 
-    // Controle da Splash Screen
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            const splash = document.getElementById('splash-screen');
-            splash.style.opacity = '0';
-            setTimeout(() => { splash.style.display = 'none'; }, 800);
-        }, 3000); // Tempo para ver a animação do gráfico
-    });
+    const safeMath = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
+    const parseNum = (v) => { let n = parseFloat(v); return isNaN(n) ? 0 : safeMath(n); };
 
-    // Lógica do App (Sua base original)
-    const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"], anos = [2024, 2025, 2026, 2027], STORAGE_KEY = 'FIN_PRO_BLACK_V2';
-    let db = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { fixed_accounts: [], meses_dados: {}, parcelamentos: [], security_active: false }, cachedPersonData = {}, dbHistory = [], currentPessoaModal = "";
+    const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"], anos = [2024, 2025, 2026, 2027], STORAGE_KEY = 'FIN_RPP_V33';
+    let db = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { fixed_accounts: [], meses_dados: {}, parcelamentos: [], theme: 'dark' };
+    let cachedPersonData = {}, edit_snapshot = {};
+    let h_stacks = { recebidos: [], fixed_accounts: [], parcelamentos: [], variaveis: [] };
 
-    function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); render(); lucide.createIcons(); }
+    function applyTheme() {
+        if(db.theme === 'light') { document.body.classList.add('light-mode'); document.getElementById('btn-theme-text').innerText = "MODO DIURNO: ATIVADO"; }
+        else { document.body.classList.remove('light-mode'); document.getElementById('btn-theme-text').innerText = "MODO DIURNO: DESATIVADO"; }
+    }
+    function toggleTheme() { db.theme = (db.theme === 'light' ? 'dark' : 'light'); save(); applyTheme(); }
 
-    function unlockApp() { document.getElementById('app-lock').style.display = 'none'; }
+    function pedirPermissaoNotificacao() { if ("Notification" in window) { Notification.requestPermission().then(p => alert(p === 'granted' ? 'Alertas Ativados!' : 'Alertas negados.')); } }
 
-    window.addEventListener('DOMContentLoaded', () => {
-        if (db.security_active) document.getElementById('app-lock').style.display = 'flex';
-        lucide.createIcons();
-    });
+    function verificarAlarmes(curM, curY, dataM) {
+        const hoje = new Date().getDate();
+        const mAgora = new Date().getMonth();
+        const yAgora = new Date().getFullYear();
+        
+        let vencemHoje = [], atrasadas = [];
+        
+        if(curM === mAgora && curY === yAgora) {
+            db.fixed_accounts.forEach(acc => {
+                const diaVenc = parseInt(acc.d);
+                const isPago = dataM.paid?.[acc.id] || false;
+                if(!isPago) {
+                    if(diaVenc === hoje) vencemHoje.push(acc.n);
+                    else if(diaVenc < hoje) atrasadas.push(acc.n);
+                }
+            });
+        }
 
-    // ... (Mantenha todas as suas funções: render, addFixedAccount, addParcelamento, abrirDetalhes, etc.) ...
-    // Importante: lembre-se de manter as funções que você já tinha no código original para o app funcionar.
-
-    const mSel = document.getElementById('month-selector'), ySel = document.getElementById('year-selector');
-    meses.forEach((m, i) => { mSel.innerHTML += `<option value="${i}" ${i === new Date().getMonth() ? 'selected' : ''}>${m}</option>`; });
-    anos.forEach(y => { ySel.innerHTML += `<option value="${y}" ${y === new Date().getFullYear() ? 'selected' : ''}>${y}</option>`; });
-
-    function openTab(t) { 
-        document.querySelectorAll('.content-section, .nav-item').forEach(x => x.classList.remove('active')); 
-        document.getElementById(t).classList.add('active'); 
+        const bHoje = document.getElementById('alarm-hoje'), bAtraso = document.getElementById('alarm-atraso');
+        if(vencemHoje.length > 0) { bHoje.style.display = 'flex'; document.getElementById('txt-hoje').innerText = vencemHoje.join(', '); } else bHoje.style.display = 'none';
+        if(atrasadas.length > 0) { bAtraso.style.display = 'flex'; document.getElementById('txt-atraso').innerText = atrasadas.join(', '); } else bAtraso.style.display = 'none';
     }
 
-    function togglePrivacy() { document.body.classList.toggle('is-visible'); }
+    const mSel = document.getElementById('month-selector'), ySel = document.getElementById('year-selector'), pMSel = document.getElementById('p-start-m'), pYSel = document.getElementById('p-start-y');
+    meses.forEach((m, i) => { mSel.innerHTML += `<option value="${i}" ${i === new Date().getMonth() ? 'selected' : ''}>${m.toUpperCase()}</option>`; pMSel.innerHTML += `<option value="${i}">${m.toUpperCase()}</option>`; });
+    anos.forEach(y => { ySel.innerHTML += `<option value="${y}" ${y === new Date().getFullYear() ? 'selected' : ''}>${y}</option>`; pYSel.innerHTML += `<option value="${y}">${y}</option>`; });
 
-    // Inicia o app
+    function pushH(cat) {
+        const k = `${mSel.value}_${ySel.value}`;
+        let snapshot = (cat === 'fixed_accounts' || cat === 'parcelamentos') ? JSON.stringify(db[cat]) : JSON.stringify(db.meses_dados[k]?.[cat] || []);
+        h_stacks[cat].push(snapshot);
+    }
+
+    function undo(cat) {
+        if(!h_stacks[cat] || h_stacks[cat].length === 0) return;
+        const k = `${mSel.value}_${ySel.value}`, last = JSON.parse(h_stacks[cat].pop());
+        if(cat === 'fixed_accounts' || cat === 'parcelamentos') db[cat] = last;
+        else { if(!db.meses_dados[k]) db.meses_dados[k] = {}; db.meses_dados[k][cat] = last; }
+        save();
+    }
+
+    function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); render(); }
+    
+    function openTab(t) { 
+        document.querySelectorAll('.content-section, .nav-item').forEach(x => x.classList.remove('active')); document.getElementById(t).classList.add('active'); 
+        document.querySelectorAll('.nav-item')[{resumo:0, lancar:1, configuracao:2}[t]].classList.add('active');
+        document.getElementById('top-stats').style.display = (t === 'configuracao' ? 'none' : 'grid');
+        document.getElementById('alert-container').style.display = (t === 'configuracao' ? 'none' : 'flex');
+    }
+
+    function toggleCategory(id) {
+        const el = document.getElementById(id); const isActive = el.classList.contains('active');
+        document.querySelectorAll('.category-wrapper').forEach(w => w.classList.remove('active'));
+        if(!isActive) el.classList.add('active');
+    }
+
+    function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display='none'); }
+    function openModalLancar(id) { document.getElementById(id).style.display = 'flex'; }
+
+    function addRecebido() { pushH('recebidos'); const k=`${mSel.value}_${ySel.value}`, d=document.getElementById('r-desc').value.trim(), v=parseNum(document.getElementById('r-val').value); if(!d || v <= 0) return; if(!db.meses_dados[k]) db.meses_dados[k]={recebidos:[], variaveis:[]}; db.meses_dados[k].recebidos.push({id:Date.now(), desc:d, val:v}); closeModals(); save(); }
+    function addFixedAccount() { pushH('fixed_accounts'); const d=document.getElementById('f-dia').value.padStart(2,'0'), n=document.getElementById('f-desc').value.trim(), r=document.getElementById('f-resp').value.trim() || 'Casa'; if(!n) return; db.fixed_accounts.push({id:Date.now(), d, n, r}); closeModals(); save(); }
+    function addParcelamento() { pushH('parcelamentos'); const d=document.getElementById('p-desc').value.trim(), v=parseNum(document.getElementById('p-val').value), q=parseInt(document.getElementById('p-qtd').value), r=document.getElementById('p-resp').value.trim() || 'Casa'; if(!d || v <= 0 || isNaN(q)) return; db.parcelamentos.push({id:Date.now(), desc:d, val:v, qtd:q, startM:parseInt(pMSel.value), startY:parseInt(pYSel.value), resp:r}); closeModals(); save(); }
+    function addVariavel() { pushH('variaveis'); const k=`${mSel.value}_${ySel.value}`, d=document.getElementById('v-desc').value.trim(), v=parseNum(document.getElementById('v-val').value); if(!d || v <= 0) return; if(!db.meses_dados[k]) db.meses_dados[k]={recebidos:[], variaveis:[]}; if(!db.meses_dados[k].variaveis) db.meses_dados[k].variaveis = []; db.meses_dados[k].variaveis.push({id:Date.now(), desc:d, val:v, resp:'Casa'}); closeModals(); save(); }
+
+    function openEdit(id, type) {
+        const catMap = { income:'recebidos', fixed:'fixed_accounts', parcela:'parcelamentos', variavel:'variaveis' };
+        document.getElementById('btn-undo-edit').onclick = () => undo(catMap[type]);
+        const curK = `${mSel.value}_${ySel.value}`, modal = document.getElementById('modal-edit'), btnPay = document.getElementById('modal-pay-btn'), dataM = db.meses_dados[curK] ?? { fixed:{}, paid:{}, recebidos:[], variaveis:[] };
+        document.getElementById('edit-id').value = id; document.getElementById('edit-type').value = type;
+        document.getElementById('status-container-fixed').style.display = (type === 'fixed') ? 'block' : 'none';
+        document.getElementById('resp-field-group').style.display = (type === 'variavel') ? 'none' : 'block';
+        let d='', v=0, r='Casa';
+        if(type === 'fixed') { const item = db.fixed_accounts.find(x => x.id == id); d = item?.n; v = dataM.fixed?.[id] || 0; r = item?.r; btnPay.innerText = (dataM.paid?.[id]) ? "REABRIR" : "LIQUIDAR"; btnPay.onclick = () => { pushH('fixed_accounts'); if(!db.meses_dados[curK].paid) db.meses_dados[curK].paid = {}; db.meses_dados[curK].paid[id] = !dataM.paid?.[id]; save(); closeModals(); }; }
+        else if(type === 'variavel') { const item = dataM.variaveis.find(x => x.id == id); d = item?.desc; v = item?.val; r = 'Casa'; }
+        else if(type === 'parcela') { const item = db.parcelamentos.find(x => x.id == id); d = item?.desc; v = item?.val; r = item?.resp; }
+        else if(type === 'income') { const item = dataM.recebidos.find(x => x.id == id); d = item?.desc; v = item?.val; }
+        document.getElementById('edit-desc').value = d; document.getElementById('edit-val').value = v; document.getElementById('edit-resp').value = r;
+        edit_snapshot = { d, v, r }; modal.style.display = 'flex';
+    }
+
+    function saveGlobalEdit() {
+        const id=document.getElementById('edit-id').value, type=document.getElementById('edit-type').value, n=document.getElementById('edit-desc').value.trim(), v=parseNum(document.getElementById('edit-val').value), r=document.getElementById('edit-resp').value.trim(), k=`${mSel.value}_${ySel.value}`;
+        pushH({ income:'recebidos', fixed:'fixed_accounts', parcela:'parcelamentos', variavel:'variaveis' }[type]);
+        if(type==='fixed'){ const acc = db.fixed_accounts.find(x=>x.id==id); if(acc) { acc.n=n; acc.r=r; } if(!db.meses_dados[k].fixed) db.meses_dados[k].fixed={}; db.meses_dados[k].fixed[id]=v; }
+        else if(type==='variavel') { const vari = db.meses_dados[k].variaveis.find(x=>x.id==id); if(vari) { vari.desc=n; vari.val=v; } }
+        else if(type==='parcela') { const p = db.parcelamentos.find(x=>x.id==id); if(p) { p.desc=n; p.val=v; p.resp=r; } }
+        else if(type==='income') { const inc = db.meses_dados[k].recebidos?.find(x => x.id == id); if(inc) { inc.desc=n; inc.val=v; } }
+        save(); closeModals();
+    }
+
+    function deleteGlobal() {
+        const id=document.getElementById('edit-id').value, type=document.getElementById('edit-type').value, k=`${mSel.value}_${ySel.value}`;
+        if(!confirm("Excluir item?")) return;
+        pushH({ income:'recebidos', fixed:'fixed_accounts', parcela:'parcelamentos', variavel:'variaveis' }[type]);
+        if(type==='fixed') db.fixed_accounts = db.fixed_accounts.filter(x=>x.id!=id);
+        else if(type==='variavel') db.meses_dados[k].variaveis = db.meses_dados[k].variaveis.filter(x=>x.id!=id);
+        else if(type==='parcela') db.parcelamentos = db.parcelamentos.filter(x=>x.id!=id);
+        else if(type==='income') db.meses_dados[k].recebidos = db.meses_dados[k].recebidos.filter(x=>x.id!=id);
+        save(); closeModals();
+    }
+
+    function render() {
+        const curM = parseInt(mSel.value), curY = parseInt(ySel.value), curK = `${curM}_${curY}`, curAbs = curY * 12 + curM;
+        let tF_Casa_Obrigacao = 0, tF_Casa_Pago = 0, tVar_T = 0, tInc = 0, penCasa = 0, personSums = {};
+        let tFGeral = 0, tFPago = 0, tFPendente = 0;
+
+        cachedPersonData = { "Casa": { total: 0, itens: [] } };
+
+        Object.keys(db.meses_dados).forEach(k => {
+            const [m, y] = k.split('_').map(Number);
+            if ((y * 12 + m) < curAbs) {
+                const dataM = db.meses_dados[k];
+                db.fixed_accounts.forEach(acc => {
+                    const v = parseNum(dataM.fixed?.[acc.id] ?? 0);
+                    if (v > 0 && !dataM.paid?.[acc.id]) {
+                        const resp = acc.r || 'Casa';
+                        if(!personSums[resp]) personSums[resp] = { f:0, p:0, pen:0, v:0 };
+                        personSums[resp].pen = safeMath(personSums[resp].pen + v);
+                        if(!cachedPersonData[resp]) cachedPersonData[resp] = { total:0, itens:[] };
+                        cachedPersonData[resp].itens.push({ tipo: "Atraso", nome: `${acc.n} (${meses[m]})`, valor: v });
+                        if(resp === 'Casa') penCasa = safeMath(penCasa + v);
+                    }
+                });
+            }
+        });
+
+        const data = db.meses_dados[curK] ?? { fixed:{}, paid:{}, recebidos:[], variaveis:[], resp_parcelas_paid:{} };
+        if(!db.meses_dados[curK]) db.meses_dados[curK] = data;
+
+        const lInc = document.getElementById('list-income'), lFix = document.getElementById('list-fixed'), lPar = document.getElementById('list-parcel'), lVar = document.getElementById('list-variable');
+        lInc.innerHTML = ''; lFix.innerHTML = ''; lPar.innerHTML = ''; lVar.innerHTML = '';
+
+        db.fixed_accounts.forEach(acc => {
+            const v = parseNum(data.fixed?.[acc.id] ?? 0), resp = acc.r || 'Casa', isP = data.paid?.[acc.id] ?? false;
+            tFGeral = safeMath(tFGeral + v);
+            if(isP) tFPago = safeMath(tFPago + v); else tFPendente = safeMath(tFPendente + v);
+            if(!personSums[resp]) personSums[resp] = { f:0, p:0, pen:0, v:0 };
+            if(!isP) personSums[resp].f = safeMath(personSums[resp].f + v); 
+            if(!cachedPersonData[resp]) cachedPersonData[resp] = { total:0, itens:[] };
+            if(v > 0) cachedPersonData[resp].itens.push({ tipo: "Fixo", nome: acc.n, valor: v, pago: isP });
+            if(resp === 'Casa') { tF_Casa_Obrigacao = safeMath(tF_Casa_Obrigacao + v); if(isP) tF_Casa_Pago = safeMath(tF_Casa_Pago + v); }
+            lFix.innerHTML += `<div class="history-item" style="${isP ? 'opacity:0.3' : ''}" onclick="openEdit(${acc.id}, 'fixed')"><span>${acc.d} - ${acc.n}</span><span class="val hidden-value">R$ ${v.toFixed(2)}</span></div>`;
+        });
+
+        if (db.fixed_accounts.length > 0) {
+            lFix.innerHTML += `<div class="total-divider"><div class="total-row" style="color:var(--text-muted)"><span>SOMA LANÇADA</span><span class="hidden-value">R$ ${tFGeral.toFixed(2)}</span></div><div class="total-row" style="color:var(--success)"><span>TOTAL PAGO</span><span class="hidden-value">R$ ${tFPago.toFixed(2)}</span></div><div class="total-row" style="color:var(--danger)"><span>FALTA PAGAR</span><span class="hidden-value">R$ ${tFPendente.toFixed(2)}</span></div></div>`;
+        }
+
+        db.parcelamentos.forEach(p => {
+            const s = p.startY * 12 + p.startM, e = s + p.qtd - 1;
+            if(curAbs >= s && curAbs <= e) {
+                const n = (curAbs - s) + 1;
+                const resps = p.resp.split(',').map(name => name.trim()).filter(name => name !== '');
+                const dividedVal = safeMath(p.val / resps.length);
+                resps.forEach(name => {
+                    if(!personSums[name]) personSums[name] = { f:0, p:0, pen:0, v:0 };
+                    personSums[name].p = safeMath(personSums[name].p + dividedVal);
+                    if(!cachedPersonData[name]) cachedPersonData[name] = { total:0, itens:[] };
+                    cachedPersonData[name].itens.push({ tipo: "Parc.", n: `${n}/${p.qtd}`, nome: `${p.desc} (Div.)`, valor: dividedVal });
+                    if(name === 'Casa') { tF_Casa_Obrigacao = safeMath(tF_Casa_Obrigacao + dividedVal); tF_Casa_Pago = safeMath(tF_Casa_Pago + dividedVal); }
+                });
+                lPar.innerHTML += `<div class="history-item" onclick="openEdit(${p.id}, 'parcela')"><span>${p.desc} (${n}/${p.qtd})</span><span class="val hidden-value">R$ ${p.val.toFixed(2)}</span></div>`;
+            }
+        });
+
+        (data.variaveis || []).forEach(v => {
+            tVar_T = safeMath(tVar_T + v.val);
+            if(!cachedPersonData["Casa"]) cachedPersonData["Casa"] = { total:0, itens:[] };
+            cachedPersonData["Casa"].itens.push({ tipo: "Variável", nome: v.desc, valor: v.val });
+            lVar.innerHTML += `<div class="history-item" onclick="openEdit(${v.id}, 'variavel')"><span>${v.desc}</span><span class="val hidden-value">R$ ${v.val.toFixed(2)}</span></div>`;
+        });
+
+        const cleanRecebidos = (data.recebidos ?? []).filter(r => !String(r.id).startsWith('auto_'));
+        for (let name in personSums) {
+            if(name === 'Casa') continue;
+            const total = safeMath(personSums[name].f + personSums[name].p + personSums[name].pen + personSums[name].v);
+            cachedPersonData[name].total = total;
+            if (data.resp_parcelas_paid?.[name]) cleanRecebidos.push({ id: `auto_${name}`, desc: `Pgto ${name}`, val: total });
+        }
+        db.meses_dados[curK].recebidos = cleanRecebidos;
+
+        cleanRecebidos.forEach(r => { 
+            tInc = safeMath(tInc + r.val); 
+            const isAuto = String(r.id).startsWith('auto_');
+            lInc.innerHTML += `<div class="history-item" ${isAuto ? '' : `onclick="openEdit(${r.id}, 'income')"`} style="${isAuto ? 'cursor:default' : ''}"><span style="color:${isAuto ? 'var(--primary)' : 'var(--success)'}; ${isAuto ? 'font-style:italic' : ''}">${r.desc}</span><span class="val hidden-value" style="color:${isAuto ? 'var(--primary)' : 'var(--success)'}">R$ ${r.val.toFixed(2)}</span></div>`; 
+        });
+
+        if (cleanRecebidos.length > 0) lInc.innerHTML += `<div class="total-divider"><div class="total-row"><span>SOMATÓRIA TOTAL</span><span class="hidden-value">R$ ${tInc.toFixed(2)}</span></div></div>`;
+
+        const totalSaidasEfetivas = safeMath(tF_Casa_Pago + tVar_T);
+        const faltaPagarCasa = safeMath((tF_Casa_Obrigacao + tVar_T) - totalSaidasEfetivas);
+        document.getElementById('stat-inc').innerText = `R$ ${tInc.toFixed(2)}`;
+        document.getElementById('stat-exp').innerText = `R$ ${totalSaidasEfetivas.toFixed(2)}`;
+        document.getElementById('stat-pen').innerText = `R$ ${penCasa.toFixed(2)}`;
+        document.getElementById('stat-bal').innerText = `R$ ${safeMath(tInc - (totalSaidasEfetivas + penCasa)).toFixed(2)}`;
+
+        document.getElementById('resumo-casa-container').innerHTML = `
+            <div class="main-card" onclick="abrirDetalhes('Casa')" style="cursor:pointer; border-left: 4px solid var(--primary);">
+                <div style="font-weight:800; margin-bottom:12px; display:flex; justify-content:space-between"><span>DESPESAS DA CASA</span><span style="font-size:0.6rem; color:var(--primary)">DETALHES</span></div>
+                <div style="font-size:0.8rem; display:flex; justify-content:space-between; color:var(--text-muted)"><span>Soma Obrigações</span><span class="hidden-value">R$ ${safeMath(tF_Casa_Obrigacao + tVar_T).toFixed(2)}</span></div>
+                <div style="font-size:0.8rem; display:flex; justify-content:space-between; color:var(--success)"><span>Já Pago</span><span class="hidden-value">R$ ${totalSaidasEfetivas.toFixed(2)}</span></div>
+                <div style="font-size:0.8rem; display:flex; justify-content:space-between; color:var(--danger)"><span>Falta Pagar</span><span class="hidden-value">R$ ${faltaPagarCasa.toFixed(2)}</span></div>
+                ${penCasa > 0 ? `<div style="font-size:0.8rem; color:var(--danger); display:flex; justify-content:space-between; font-weight:800"><span>Atrasos Anteriores</span><span class="hidden-value">R$ ${penCasa.toFixed(2)}</span></div>` : ''}
+                <div style="font-weight:800; margin-top:12px; border-top:1px solid var(--border); padding-top:12px; display:flex; justify-content:space-between; color:var(--primary)"><span>TOTAL GERAL CASA</span><span class="hidden-value">R$ ${safeMath(tF_Casa_Obrigacao + tVar_T + penCasa).toFixed(2)}</span></div>
+            </div>`;
+        cachedPersonData["Casa"].total = safeMath(tF_Casa_Obrigacao + tVar_T + penCasa);
+
+        const pArea = document.getElementById('tabelas-por-pessoa'); pArea.innerHTML = '';
+        for (let name in personSums) {
+            if(name === 'Casa') continue;
+            const isP = data.resp_parcelas_paid?.[name] ?? false;
+            pArea.innerHTML += `<div class="main-card" style="padding:15px"><div onclick="abrirDetalhes('${name}')" style="font-weight:800; font-size:0.7rem; margin-bottom:10px; display:flex; justify-content:space-between; cursor:pointer"><span>${name.toUpperCase()}</span><span>VER</span></div><div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-app); padding:8px; border-radius:10px; margin-bottom:8px"><span style="font-size:0.5rem">PAGO?</span><div class="gold-check ${isP ? 'active' : ''}" onclick="updatePaidStatus('${name}', ${!isP})"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div></div><div style="font-weight:800; display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:8px; font-size:0.8rem"><span>R$</span><span class="hidden-value">${cachedPersonData[name].total.toFixed(2)}</span></div></div>`;
+        }
+        verificarAlarmes(curM, curY, data);
+    }
+
+    function updatePaidStatus(p, s) { pushH('recebidos'); const k = `${mSel.value}_${ySel.value}`; if(!db.meses_dados[k].resp_parcelas_paid) db.meses_dados[k].resp_parcelas_paid={}; db.meses_dados[k].resp_parcelas_paid[p]=s; save(); }
+    
+    function abrirDetalhes(pessoa) {
+        const data = cachedPersonData[pessoa]; if(!data) return;
+        document.getElementById('detalhes-titulo').innerText = pessoa === 'Casa' ? 'EXTRATO CASA' : `EXTRATO ${pessoa}`;
+        const lista = document.getElementById('detalhes-lista'); lista.innerHTML = '';
+        data.itens.forEach(item => { 
+            const label = (item.tipo === "Parc." || item.tipo === "Parcela") ? `${item.nome} (${item.n})` : item.nome;
+            const status = item.pago ? ' <span style="font-size:0.5rem; color:var(--success)">[PAGO]</span>' : '';
+            lista.innerHTML += `<div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border)"><div><span style="font-size:0.5rem; color:var(--text-muted); display:block; text-transform:uppercase">${item.tipo}</span><span style="font-weight:700">${label}${status}</span></div><span class="hidden-value" style="font-weight:800">R$ ${item.valor.toFixed(2)}</span></div>`; 
+        });
+        document.getElementById('detalhes-total').innerText = `R$ ${data.total.toFixed(2)}`;
+
+        document.getElementById('btn-share-whatsapp').onclick = () => {
+            const mm = meses[mSel.value].toUpperCase();
+            const yy = ySel.value;
+            let msg = `*RPP FINANCEIRO - ${mm}/${yy}*\n*EXTRATO:* ${pessoa.toUpperCase()}\n--------------------------\n`;
+            data.itens.forEach(i => {
+                const val = i.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                const label = (i.tipo === "Parc." || i.tipo === "Parcela") ? `${i.nome} (${i.n})` : i.nome;
+                msg += `${label}: R$ ${val}${i.pago ? ' (PAGO)' : ''}\n`;
+            });
+            msg += `--------------------------\n*TOTAL PENDENTE: R$ ${data.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}*`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+        };
+        document.getElementById('modal-detalhes').style.display = 'flex';
+    }
+
+    function exportarDados() { const a=document.createElement('a'); a.href='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(db)); a.download=`backup_rpp.json`; a.click(); }
+    function importarDados(e) { const r=new FileReader(); r.onload=(ev)=>{ try { db = JSON.parse(ev.target.result); save(); location.reload(); } catch(err) { alert("Erro!"); } }; r.readAsText(e.target.files[0]); }
+
+    applyTheme();
     render();
 </script>
 </body>
